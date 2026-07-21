@@ -1,0 +1,335 @@
+/* === ESTILOS GERAIS === */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 20px;
+}
+
+/* === CONTAINER PRINCIPAL === */
+
+#pomodoro-app {
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* === CABEÇALHO === */
+
+.pomodoro-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.pomodoro-header__title {
+  font-size: 28px;
+  color: #c0392b;
+}
+
+.pomodoro-header__subtitle {
+  font-size: 14px;
+  color: #777;
+  margin-top: 4px;
+}
+
+/* === CARD DO TIMER === */
+
+#timer-card {
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 16px;
+  background-color: #fafafa;
+}
+
+/* Badge do modo (Foco / Pausa) */
+
+#mode-badge {
+  display: inline-block;
+  background-color: #e74c3c;
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Variante pausa — adicionada via JS */
+#mode-badge.timer__mode-badge--break {
+  background-color: #3498db;
+}
+
+/* Display do tempo */
+
+#timer-display {
+  display: block;
+  font-size: 72px;
+  font-weight: bold;
+  color: #c0392b;
+  letter-spacing: 2px;
+  margin: 16px 0;
+}
+
+/* Botões de controle */
+
+.timer__controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+/* === ESTILO DOS BOTÕES === */
+
+.btn {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 8px 18px;
+  border-radius: 4px;
+  border: 1px solid #aaa;
+  background-color: #eee;
+  color: #333;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #ddd;
+}
+
+/* Botão Start */
+#btn-start {
+  background-color: #e74c3c;
+  color: #fff;
+  border-color: #c0392b;
+}
+
+#btn-start:hover {
+  background-color: #c0392b;
+}
+
+/* Botão Pause */
+#btn-pause {
+  background-color: #3498db;
+  color: #fff;
+  border-color: #2980b9;
+}
+
+#btn-pause:hover {
+  background-color: #2980b9;
+}
+
+/* Botão Reset — estilo mais simples */
+#btn-reset {
+  background-color: #eee;
+  color: #555;
+}
+
+/* === CONTADOR DE POMODOROS === */
+
+#pomodoro-counter {
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+  background-color: #fafafa;
+}
+
+.pomodoro-counter__label {
+  font-size: 15px;
+  color: #555;
+}
+
+.pomodoro-counter__value {
+  color: #c0392b;
+  font-size: 18px;
+}
+
+/* Bolinhas dos ciclos */
+.pomodoro-counter__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pomodoro-counter__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #c0392b;
+  background-color: transparent;
+}
+
+/* Dot preenchido — adicionado via JS */
+.pomodoro-counter__dot--filled {
+  background-color: #c0392b;
+}
+
+/* === CONFIGURAÇÕES === */
+
+#settings-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: #fafafa;
+}
+
+.settings-card__title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #777;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.form-group__label {
+  font-size: 13px;
+  color: #555;
+}
+
+.form-group__input {
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.form-group__input:focus {
+  outline: none;
+  border-color: #e74c3c;
+}
+
+.form-group__suffix {
+  font-size: 11px;
+  color: #999;
+}
+
+/* Botão Salvar */
+#btn-save {
+  background-color: #27ae60;
+  color: #fff;
+  border-color: #1e8449;
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+}
+
+#btn-save:hover {
+  background-color: #1e8449;
+}
+
+/* === ÁREA DE NOTIFICAÇÕES === */
+
+#notifications-area {
+  border: 1px dashed #bbb;
+  border-radius: 6px;
+  padding: 12px;
+  min-height: 50px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notifications-area__placeholder {
+  font-size: 13px;
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Notificações individuais — criadas via JS */
+.notification {
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  width: 100%;
+  text-align: center;
+}
+
+.notification--success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.notification--info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.notification--warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+/* === RODAPÉ === */
+
+.pomodoro-footer {
+  text-align: center;
+}
+
+.pomodoro-footer__text {
+  font-size: 11px;
+  color: #bbb;
+}
+
+/* === RESPONSIVIDADE === */
+
+@media (max-width: 440px) {
+  #timer-display {
+    font-size: 56px;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .timer__controls {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn {
+    width: 80%;
+  }
+}
