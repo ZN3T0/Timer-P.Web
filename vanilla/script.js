@@ -40,11 +40,15 @@ function inicializarTimerApp() {
   let tempoPausa = obterDado('pomodoro_break_time', 5);
   let pomodorosConcluidos = obterDado('pomodoro_completed_count', 0);
 
-  let modoAtual = 'foco';
-  let tempoRestante = tempoFoco * 60;
+  // Estados adicionais restaurados do localStorage para sobreviver ao F5
+  let modoAtual = localStorage.getItem('pomodoro_modo_atual') || 'foco';
+  let tempoRestante = obterDado('pomodoro_tempo_restante', tempoFoco * 60);
+  let estaRodandoSalvo = localStorage.getItem('pomodoro_esta_rodando') === 'true';
+  let estaPausado = localStorage.getItem('pomodoro_esta_pausado') === 'true';
+  let ultimoTimestamp = obterDado('pomodoro_ultimo_timestamp', 0);
+
   let intervaloTimer = null;
   let estaRodando = false;
-  let estaPausado = false;
 
   if (inputFocusTime) inputFocusTime.value = tempoFoco;
   if (inputBreakTime) inputBreakTime.value = tempoPausa;
@@ -162,10 +166,21 @@ function inicializarTimerApp() {
 
     estaRodando = true;
     estaPausado = false;
+    
+    // Salvar estados de execução no localStorage
+    salvarDado('pomodoro_esta_rodando', 'true');
+    salvarDado('pomodoro_esta_pausado', 'false');
+    salvarDado('pomodoro_modo_atual', modoAtual);
+    salvarDado('pomodoro_ultimo_timestamp', Date.now());
+    
     atualizarInterface();
 
     intervaloTimer = setInterval(() => {
       tempoRestante--;
+      
+      // Atualizar o tempo restante e o timestamp a cada segundo
+      salvarDado('pomodoro_tempo_restante', tempoRestante);
+      salvarDado('pomodoro_ultimo_timestamp', Date.now());
 
       if (tempoRestante <= 0) {
         clearInterval(intervaloTimer);
@@ -185,6 +200,11 @@ function inicializarTimerApp() {
           mostrarNotificacao('Pausa concluída! Hora de focar.', 'info');
         }
 
+        salvarDado('pomodoro_modo_atual', modoAtual);
+        salvarDado('pomodoro_tempo_restante', tempoRestante);
+        salvarDado('pomodoro_esta_rodando', 'false');
+        salvarDado('pomodoro_esta_pausado', 'false');
+
         estaRodando = false;
         iniciarTimer();
       } else {
@@ -202,6 +222,12 @@ function inicializarTimerApp() {
     estaRodando = false;
     estaPausado = true;
 
+    // Salvar estados de pausa no localStorage
+    salvarDado('pomodoro_esta_rodando', 'false');
+    salvarDado('pomodoro_esta_pausado', 'true');
+    salvarDado('pomodoro_tempo_restante', tempoRestante);
+    salvarDado('pomodoro_ultimo_timestamp', Date.now());
+
     atualizarInterface();
   }
 
@@ -213,6 +239,13 @@ function inicializarTimerApp() {
     estaPausado = false;
     modoAtual = 'foco';
     tempoRestante = tempoFoco * 60;
+
+    // Resetar estados no localStorage
+    salvarDado('pomodoro_esta_rodando', 'false');
+    salvarDado('pomodoro_esta_pausado', 'false');
+    salvarDado('pomodoro_modo_atual', 'foco');
+    salvarDado('pomodoro_tempo_restante', tempoRestante);
+    salvarDado('pomodoro_ultimo_timestamp', Date.now());
 
     atualizarInterface();
   }
@@ -253,7 +286,34 @@ function inicializarTimerApp() {
     });
   }
 
-  atualizarInterface();
+  // Restaurar e recalcular o estado se o timer estava rodando antes de recarregar (F5)
+  if (estaRodandoSalvo && ultimoTimestamp > 0) {
+    const tempoDecorrido = Math.floor((Date.now() - ultimoTimestamp) / 1000);
+    
+    if (tempoDecorrido > 0) {
+      let tempoParaProcessar = tempoDecorrido;
+      while (tempoParaProcessar >= tempoRestante) {
+        tempoParaProcessar -= tempoRestante;
+        if (modoAtual === 'foco') {
+          pomodorosConcluidos++;
+          modoAtual = 'pausa';
+          tempoRestante = tempoPausa * 60;
+        } else {
+          modoAtual = 'foco';
+          tempoRestante = tempoFoco * 60;
+        }
+      }
+      tempoRestante -= tempoParaProcessar;
+
+      salvarDado('pomodoro_completed_count', pomodorosConcluidos);
+      salvarDado('pomodoro_modo_atual', modoAtual);
+      salvarDado('pomodoro_tempo_restante', tempoRestante);
+    }
+
+    iniciarTimer();
+  } else {
+    atualizarInterface();
+  }
 }
 
 // Inicializa a aplicação garantindo que o DOM já esteja carregado
