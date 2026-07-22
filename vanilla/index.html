@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,10 +12,6 @@
 <body>
 
   <!-- Container principal -->
-  <!--
-    JS: adicionar as classes .is-running | .is-paused | .is-break
-    neste elemento para refletir o estado do timer.
-  -->
   <div id="pomodoro-app">
 
     <!-- Cabeçalho -->
@@ -27,37 +24,18 @@
     <section id="timer-card">
 
       <!-- Indicador do modo atual -->
-      <!--
-        JS: trocar o texto para "Pausa" e adicionar
-        a classe .timer__mode-badge--break quando entrar no modo pausa.
-      -->
       <span id="mode-badge" role="status" aria-live="polite">Foco</span>
 
       <!-- Exibição do tempo mm:ss -->
-      <!--
-        JS: atualizar o textContent com o tempo no formato mm:ss.
-      -->
       <output id="timer-display" role="timer" aria-live="off">25:00</output>
 
       <!-- Botões de controle -->
       <div class="timer__controls">
 
-        <!--
-          JS: iniciar a contagem regressiva ao clicar.
-          Desabilitar enquanto o timer estiver rodando.
-        -->
         <button id="btn-start" class="btn" type="button">▶ Start</button>
 
-        <!--
-          JS: pausar a contagem ao clicar.
-          Desabilitar quando o timer não estiver rodando.
-        -->
         <button id="btn-pause" class="btn" type="button">⏸ Pause</button>
 
-        <!--
-          JS: reiniciar o timer ao clicar.
-          Volta para o tempo de foco configurado.
-        -->
         <button id="btn-reset" class="btn" type="button">↺ Reset</button>
 
       </div>
@@ -65,15 +43,10 @@
     </section>
 
     <!-- Contador de pomodoros concluídos -->
-    <!--
-      JS: incrementar o valor de #pomodoro-count ao completar um ciclo.
-      Preencher os dots com .pomodoro-counter__dot--filled conforme o ciclo avança.
-    -->
     <div id="pomodoro-counter" role="status" aria-live="polite">
 
       <!-- Bolinhas visuais dos 4 ciclos do bloco atual -->
       <div class="pomodoro-counter__dots">
-        <!-- JS: adicionar .pomodoro-counter__dot--filled conforme ciclos são completados -->
         <span class="pomodoro-counter__dot" data-dot-index="1"></span>
         <span class="pomodoro-counter__dot" data-dot-index="2"></span>
         <span class="pomodoro-counter__dot" data-dot-index="3"></span>
@@ -88,10 +61,6 @@
     </div>
 
     <!-- Configurações -->
-    <!--
-      JS: ao submeter o formulário, ler #input-focus-time e #input-break-time,
-      validar e aplicar os valores no timer.
-    -->
     <section id="settings-card">
 
       <h2 class="settings-card__title">Configurações</h2>
@@ -103,59 +72,31 @@
           <!-- Tempo de foco -->
           <div class="form-group">
             <label class="form-group__label" for="input-focus-time">⏱ Foco</label>
-<<<<<<< Updated upstream
-            <!--
-              JS: ler este valor ao salvar. Padrão: 25. Min: 1, Max: 60.
-            -->
-            <input
-              id="input-focus-time"
-              class="form-group__input"
-              type="number"
-              name="focus-time"
-              min="1"
-              max="60"
-              value="25"
-              placeholder="25"
-            />
+            <<<<<<< Updated upstream <input id="input-focus-time" class="form-group__input" type="number"
+              name="focus-time" min="1" max="60" value="25" placeholder="25" />
             <span class="form-group__suffix">minutos</span>
-=======
+            =======
             <input id="input-focus-time" class="form-group__input" type="number" name="focus-time" min="1" max="3600"
               step="1" value="120" placeholder="300" />
             <span class="form-group__suffix">segundos</span>
->>>>>>> Stashed changes
+            >>>>>>> Stashed changes
           </div>
 
           <!-- Tempo de pausa -->
           <div class="form-group">
             <label class="form-group__label" for="input-break-time">☕ Pausa</label>
-<<<<<<< Updated upstream
-            <!--
-              JS: ler este valor ao salvar. Padrão: 5. Min: 1, Max: 30.
-            -->
-            <input
-              id="input-break-time"
-              class="form-group__input"
-              type="number"
-              name="break-time"
-              min="1"
-              max="30"
-              value="5"
-              placeholder="5"
-            />
+            <<<<<<< Updated upstream <input id="input-break-time" class="form-group__input" type="number"
+              name="break-time" min="1" max="30" value="5" placeholder="5" />
             <span class="form-group__suffix">minutos</span>
-=======
+            =======
             <input id="input-break-time" class="form-group__input" type="number" name="break-time" min="1" max="1800"
               step="1" value="300" placeholder="300" />
             <span class="form-group__suffix">segundos</span>
->>>>>>> Stashed changes
+            >>>>>>> Stashed changes
           </div>
 
         </div>
 
-        <!--
-          JS: ao clicar, salvar os valores dos campos acima e atualizar o timer.
-          Exibir uma notificação em #notifications-area confirmando.
-        -->
         <button id="btn-save" class="btn" type="submit">Salvar Configurações</button>
 
       </form>
@@ -163,12 +104,6 @@
     </section>
 
     <!-- Área de notificações -->
-    <!--
-      JS: inserir elementos .notification aqui dinamicamente.
-      Tipos: .notification--success | .notification--info | .notification--warning
-      Remover automaticamente após alguns segundos.
-      Ocultar #notifications-placeholder quando houver notificações.
-    -->
     <div id="notifications-area" role="alert" aria-live="assertive">
       <p id="notifications-placeholder" class="notifications-area__placeholder">
         As notificações aparecerão aqui…
@@ -181,37 +116,11 @@
     </footer>
 
   </div>
-  
+
   <!-- /#pomodoro-app -->
 
-  <!--
-    IDs disponíveis para o JavaScript:
-      #pomodoro-app         → container principal (recebe classes de estado)
-      #mode-badge           → indicador do modo (Foco / Pausa)
-      #timer-display        → exibição do tempo mm:ss
-      #btn-start            → botão Start
-      #btn-pause            → botão Pause
-      #btn-reset            → botão Reset
-      #pomodoro-count       → número de pomodoros concluídos
-      [data-dot-index]      → bolinhas de ciclo (1 a 4)
-      #settings-form        → formulário de configurações
-      #input-focus-time     → campo do tempo de foco (minutos)
-      #input-break-time     → campo do tempo de pausa (minutos)
-      #btn-save             → botão salvar configurações
-      #notifications-area   → área de notificações
-      #notifications-placeholder → texto padrão quando vazio
-
-    Classes CSS de estado (no #pomodoro-app):
-      .is-running   → timer em contagem
-      .is-paused    → timer pausado
-      .is-break     → modo pausa/descanso
-
-    Classes de notificação (no .notification):
-      .notification--success
-      .notification--info
-      .notification--warning
-  -->
   <script src="script.js"></script>
 
 </body>
+
 </html>
