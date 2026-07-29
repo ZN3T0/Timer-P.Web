@@ -1,66 +1,89 @@
-# Timer Pomodoro — versão com Lit
+# Timer Pomodoro - Versão Lit Framework
 
-A mesma aplicação da pasta `vanilla/`, reescrita com o framework **Lit** (Web Components).
+Esta pasta contém a implementação da aplicação Timer Pomodoro utilizando o **Lit** (versão 3.x), uma biblioteca leve para construção de Web Components rápidos e reativos.
 
-## Estrutura
+---
 
-```
+## Estrutura de Arquivos
+
+```text
 framework/
-├── index.html   → carrega o Lit e o componente
-├── script.js    → o componente <pomodoro-app> (lógica + template)
-├── styles.js    → os estilos do componente
+├── index.html   # Ponto de entrada HTML com configuração de Import Maps
+├── script.js    # Definição do Web Component <pomodoro-app> (lógica e template)
+├── styles.js    # Estilos CSS encapsulados via template tag css do Lit
 ├── lib/
-│   └── lit.js   → o framework Lit (dependência, não é código nosso)
-└── README.md
+│   └── lit.js   # Bundle standalone do Lit 3.3.3 (ESM)
+└── README.md    # Documentação técnica desta versão
 ```
 
-A organização acompanha a da pasta `vanilla/`, arquivo por arquivo:
+---
 
-| `vanilla/` | `framework/` | |
+## Mapeamento em Relação à Versão Vanilla
+
+Para facilitar a comparação direta entre as abordagens, a organização dos arquivos acompanha a estrutura da pasta `vanilla/`:
+
+| Arquivo Vanilla | Arquivo Lit | Função / Descrição |
 |---|---|---|
-| `index.html` | `index.html` | a página |
-| `script.js` | `script.js` | a lógica |
-| `style.css` | `styles.js` | os estilos |
+| `vanilla/index.html` | `framework/index.html` | Estrutura base da página e declaração do componente `<pomodoro-app>` |
+| `vanilla/script.js` | `framework/script.js` | Lógica da aplicação, temporizador e gerenciamento de estado |
+| `vanilla/style.css` | `framework/styles.js` | Estilização da interface (convertida para CSS encapsulado via Lit) |
 
-O CSS vira `styles.js` (e não `style.css`) porque no Lit ele é escrito com a
-template tag `css` e importado pelo componente — assim fica isolado no Shadow DOM.
+*Nota: `style.css` foi transformado em `styles.js` para ser importado como um objeto de estilos Lit (`css` tagged template), garantindo o isolamento pelo Shadow DOM.*
 
-## Como executar
+---
 
-O import map exige que a página seja servida por HTTP (abrir o arquivo direto
-com duplo clique **não funciona**).
+## Como Executar
+
+Como esta versão utiliza **Import Maps** para resolução de ES Modules nativos, ela **deve ser executada via protocolo HTTP** (abrir o arquivo diretamente com `file://` causará bloqueio pelo navegador por políticas de segurança).
+
+### Opção 1: Com Node.js / npx
 
 ```bash
 npx serve framework
 ```
 
-Ou, com Python:
+### Opção 2: Com Python 3
 
 ```bash
 python -m http.server 8000
 ```
 
-Depois abra o endereço mostrado no terminal.
+Após iniciar o servidor, acesse o endereço fornecido no terminal (por exemplo, `http://localhost:8000`).
 
-Não precisa de internet: o Lit está em `lib/lit.js`, dentro do projeto.
+---
 
-> O aviso sonoro (Web Audio API) só toca depois da primeira interação com a
-> página — é uma política de segurança dos navegadores.
+## Arquitetura do Componente `<pomodoro-app>`
 
-## Como o Lit é carregado sem bundler
+A aplicação é encapsulada em um único Custom Element reativo:
 
-O `script.js` importa `from 'lit'`, exatamente como faria num projeto com
-bundler. O **import map** no `index.html` resolve esse nome para o arquivo local:
+1. **Propriedades Reativas (`static properties`)**:
+   Declara as variáveis de estado (`tempoFoco`, `tempoPausa`, `tempoRestante`, `pomodorosConcluidos`, `modoAtual`, `estaRodando`, `notificacoes`). Quando qualquer uma dessas propriedades é alterada, o Lit agenda e executa a re-renderização da interface de forma otimizada.
+
+2. **Estilização Isolada (`static styles`)**:
+   Importa as regras de CSS registradas em `styles.js`. Os estilos ficam restritos ao Shadow DOM do componente, prevenindo vazamentos de CSS para o documento principal ou inferências externas.
+
+3. **Template Declarativo (`render()`)**:
+   Define o HTML da aplicação utilizando a função `html` do Lit. Eventos são vinculados declarativamente (ex: `@click=${this.iniciarTimer}`) e renderizações condicionais/listas utilizam expressões JavaScript padrão (como `.map()`).
+
+---
+
+## Resolução de Módulos e Lit sem Bundler
+
+O arquivo `index.html` utiliza um **Import Map** nativo para mapear a especificação do módulo `lit` ao arquivo estático local:
 
 ```html
 <script type="importmap">
-  { "imports": { "lit": "./lib/lit.js" } }
+  {
+    "imports": {
+      "lit": "./lib/lit.js"
+    }
+  }
 </script>
 ```
 
-O `lib/lit.js` é o **Lit 3.3.3**, baixado do npm e empacotado num arquivo único
-(15 KB) para não depender de internet — importante porque a apresentação é ao
-vivo. Foi gerado assim:
+### Como o `lib/lit.js` foi gerado
+
+Para evitar chamadas de rede a CDNs externas durante a execução e permitir funcionamento offline, o Lit 3.3.3 foi empacotado em um único arquivo ESM (aproximadamente 15 KB minificado) utilizando o `esbuild`:
 
 ```bash
 npm install lit@3
@@ -68,33 +91,23 @@ echo 'export * from "lit";' > entrada.js
 npx esbuild entrada.js --bundle --minify --format=esm --outfile=lib/lit.js
 ```
 
-> **Por que não usar o arquivo do npm direto?** Porque `lit@3/index.js` contém
-> `import "@lit/reactive-element"` e `import "lit-html"` — nomes que só um
-> bundler sabe resolver; o navegador dá 404. É preciso um arquivo já empacotado,
-> seja o `+esm` de uma CDN ou um gerado localmente, como fizemos.
+> **Por que não usar o arquivo do npm diretamente?**
+> O pacote padrão do npm (`lit/index.js`) utiliza declarações de importação relativas a pacotes internos (como `@lit/reactive-element` e `lit-html`), que não são resolvidas pelo navegador sem um bundler ou import map exaustivo. O arquivo empacotado resolve todas as dependências internas em um único arquivo ESM local.
 
-## O componente
+---
 
-Tudo vive em `<pomodoro-app>`:
+## Diferenças Técnicas em Relação ao Vanilla JavaScript
 
-- **`static properties`** — o estado reativo (`tempoRestante`, `modoAtual`,
-  `estaRodando`, `notificacoes`…). Quando um deles muda, o Lit redesenha sozinho.
-- **`static styles`** — recebe os estilos importados de `styles.js`. Ficam
-  isolados dentro do componente (Shadow DOM), sem vazar para o resto da página.
-- **`render()`** — o HTML, escrito com a template tag `html`.
-
-## Diferenças em relação ao vanilla
-
-| | vanilla | Lit |
+| Operação | Vanilla JavaScript | Lit Framework |
 |---|---|---|
-| Buscar elementos | `document.getElementById(...)` | não precisa |
-| Atualizar a tela | `atualizarInterface()` manual | automático ao mudar uma property |
-| Eventos | `addEventListener` | `@click=${...}` no template |
-| Classes condicionais | `classList.add/remove` | interpolação no template |
-| Lista de notificações | `createElement` + `remove()` | `.map()` sobre um array |
-| CSS | `style.css` global | `static styles` isolado no componente |
+| **Seleção de Elementos** | Requer `document.getElementById` ou `querySelector` | Desnecessário; referências são vinculadas no template |
+| **Atualização da Interface** | Função manual (ex: `atualizarInterface()`) | Automática ao mutar qualquer `property` reativa |
+| **Vínculo de Eventos** | Imperativo (`element.addEventListener(...)`) | Declarativo (`@click=${this.acao}` no template HTML) |
+| **Renderização de Listas** | Criação manual de nós (`createElement`, `appendChild`) | Mapeamento declarativo com `.map()` dentro do template |
+| **CSS e Estilização** | CSS global afetando toda a página | CSS isolado no Shadow DOM via `css` tagged template |
 
-O comportamento é o mesmo: ciclos de foco/pausa, contador de pomodoros,
-configuração de tempos, notificações, som de aviso, e o estado é salvo no
-`localStorage` (inclusive recalculando os ciclos que passaram se a página for
-recarregada com o timer rodando).
+---
+
+## Observação sobre o Sinal Sonoro
+
+O aviso sonoro de conclusão do ciclo é gerado via **Web Audio API**. Por restrições de política de autoplay dos navegadores modernos, o áudio só poderá ser reproduzido após a primeira interação do usuário com a página (ex: ao clicar no botão "Iniciar").
